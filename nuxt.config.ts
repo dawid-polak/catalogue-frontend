@@ -5,4 +5,9 @@ export default defineNuxtConfig({
      devServer: {
           port: 3001,
      },
+     runtimeConfig: {
+          public: {
+               apiHost: "https://mastercatalogue.ozparts.eu",
+          },
+     },
 });

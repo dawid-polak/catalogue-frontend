@@ -22,7 +22,7 @@ provide("titlePage", titlePage);
           />
 
           <UContainer
-               class="my-5"
+               class=""
                :style="{ height: `${containerHeight}px` }"
                :ui="{
                     base: 'mx-auto',
@@ -31,7 +31,7 @@ provide("titlePage", titlePage);
                }"
           >
                <div>
-                    <h1 class="my-4 text-orange-400 text-lg font-thin">
+                    <h1 class="my-4 text-orange-400 text-xl font-thin">
                          {{ titlePage }}
                     </h1>
                </div>
