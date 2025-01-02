@@ -1,6 +1,8 @@
 <script setup>
+const { token, login, signOut, signUp } = useAuthStore();
+
 const isLoggedIn = ref(false);
-const currentAction = ref("signup"); // status | login | register
+const currentAction = ref("login"); // status | login | register
 const isOpenModalInformation = ref(false);
 
 const stateLogin = reactive({
@@ -13,6 +15,8 @@ const stateSingUp = reactive({
      password: undefined,
      confirmPassword: undefined,
 });
+
+const idUser = computed(() => email);
 
 const validateLogin = (state) => {
      let errors = [];
@@ -28,8 +32,10 @@ const validateLogin = (state) => {
      return errors;
 };
 
-const submitLogin = (event) => {
-     console.log(event.data);
+const submitLogin = async (event) => {
+     if ((await login(event.data.email, event.data.password)) === "success") {
+          return (currentAction.value = "status");
+     }
 };
 
 // Sign up validate
@@ -54,8 +60,10 @@ const validateSignUp = (state) => {
      return errors;
 };
 
-const submitSignUp = (event) => {
-     console.log(event.data);
+const submitSignUp = async (event) => {
+     if ((await signUp(event.data.email, event.data.password)) === "success") {
+          return (currentAction.value = "login");
+     }
 };
 
 const textMainBtnAction = (action) => {
@@ -74,16 +82,18 @@ const handleMainBtnAction = (action) => {
      }
 
      if (action === "signup") {
-          console.log(23);
           currentAction.value = "login";
           return;
      }
 
      if (action === "status") {
+          signOut();
           currentAction.value = "login";
           return;
      }
 };
+
+token ? (currentAction.value = "status") : (currentAction.value = "login");
 </script>
 
 <template>
@@ -109,9 +119,9 @@ const handleMainBtnAction = (action) => {
           </template>
 
           <!-- Alert -->
-          <div v-if="currentAction === 'status'">
+          <div v-if="currentAction === 'status'" class="w-100">
                <h1>Status: <span class="text-orange-400">Active</span></h1>
-               <h1 class="mt-1">ID: dawid.polak@3cerp.cloud</h1>
+               <h1 class="mt-1" :key="email">ID: {{ email }}</h1>
           </div>
 
           <div v-if="currentAction === 'alert'">
@@ -144,7 +154,7 @@ const handleMainBtnAction = (action) => {
                :state="stateSingUp"
                :validate="validateSignUp"
                class="max-w-[500px] mx-auto space-y-4"
-               @submit="submitLogin"
+               @submit="submitSignUp"
           >
                <UFormGroup label="E-mail" name="email" required>
                     <UInput v-model="stateSingUp.email" />
