@@ -1,7 +1,6 @@
 <script setup>
-const { token, login, signOut, signUp } = useAuthStore();
+const { email, token, login, signOut, signUp } = useAuthStore();
 
-const isLoggedIn = ref(false);
 const currentAction = ref("login"); // status | login | register
 const isOpenModalInformation = ref(false);
 
@@ -16,8 +15,7 @@ const stateSingUp = reactive({
      confirmPassword: undefined,
 });
 
-const idUser = computed(() => email);
-
+// Rules to validate login form
 const validateLogin = (state) => {
      let errors = [];
 
@@ -32,6 +30,7 @@ const validateLogin = (state) => {
      return errors;
 };
 
+// Handle login user
 const submitLogin = async (event) => {
      if ((await login(event.data.email, event.data.password)) === "success") {
           return (currentAction.value = "status");
@@ -60,12 +59,14 @@ const validateSignUp = (state) => {
      return errors;
 };
 
+// Handle singup user
 const submitSignUp = async (event) => {
      if ((await signUp(event.data.email, event.data.password)) === "success") {
           return (currentAction.value = "login");
      }
 };
 
+// Set text in main btn
 const textMainBtnAction = (action) => {
      if (action === "login") return "Sign up";
 
@@ -74,6 +75,7 @@ const textMainBtnAction = (action) => {
      if (action === "status") return "Sign out";
 };
 
+// Choose action 
 const handleMainBtnAction = (action) => {
      if (action === "login") {
           currentAction.value = "signup";
@@ -121,7 +123,7 @@ token ? (currentAction.value = "status") : (currentAction.value = "login");
           <!-- Alert -->
           <div v-if="currentAction === 'status'" class="w-100">
                <h1>Status: <span class="text-orange-400">Active</span></h1>
-               <h1 class="mt-1" :key="email">ID: {{ email }}</h1>
+               <h1 class="mt-1">ID: {{ email }}</h1>
           </div>
 
           <div v-if="currentAction === 'alert'">

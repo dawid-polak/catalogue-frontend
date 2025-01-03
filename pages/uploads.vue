@@ -8,8 +8,6 @@ onMounted(() => {
 
 <template>
      <div class="pt-5">
-          <!-- <UploadsUploadSqlFile /> -->
-
           <UploadsUploadBigCsv />
      </div>
 </template>
