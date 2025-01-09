@@ -80,6 +80,13 @@ const props = defineProps({
                          >
                               Uploads
                          </ULink>
+                         <ULink
+                              to="database"
+                              active-class="text-orange-400"
+                              inactive-class="text-orange dark:text-white hover:text-orange-400 dark:hover:text-orange-400"
+                         >
+                              Database
+                         </ULink>
                     </div>
                </UContainer>
 

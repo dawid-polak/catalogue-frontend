@@ -16,9 +16,11 @@ export default defineNuxtPlugin({
                switch (type) {
                     case "error": {
                          errorToast(title, description);
+                         break;
                     }
                     case "success": {
                          successToast(title, description);
+                         break;
                     }
                }
           };
