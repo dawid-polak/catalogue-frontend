@@ -7,7 +7,7 @@ export default defineNuxtPlugin({
 
           //   Global prefernces toast
           const toastPreferences = {
-               timeout: 2000,
+               timeout: 3000,
                pauseTimeoutOnHover: true,
           };
 

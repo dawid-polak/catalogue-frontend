@@ -7,7 +7,7 @@ onMounted(() => {
 </script>
 
 <template>
-     <div class="pt-5">
+     <div class="py-5">
           <UploadsUploadBigCsv />
      </div>
 </template>

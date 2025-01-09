@@ -16,6 +16,8 @@ const formState = ref({
      countPartsData: undefined,
      currentFileUpload: 0,
      splitData: [],
+     errors: undefined,
+     success: false,
 });
 
 const constantVariables = useConstantVariable();
@@ -54,7 +56,7 @@ const splitData = (dataCsv) => {
      const splitData = [];
 
      // number of lines per file
-     const size = 100;
+     const size = 1000;
 
      for (let i = 0; i < dataCsv.length; i += size) {
           const partData = dataCsv.slice(i, i + size);
@@ -110,7 +112,7 @@ const handleParse = async (event) => {
 
 // function to send data to db
 const fetchData = async (body) => {
-     const url = "https://mastercatalogue.ozparts.eu/api/uploads/rowData";
+     const url = "http://localhost:3000/api/uploads/rowData";
 
      const headers = {
           "Content-Type": "application/json",
@@ -150,14 +152,48 @@ const handleUploadData = async () => {
                }
           }
 
-          return (loading.value.isUploading = false);
-     } catch (error) {
-          console.error(error);
-
           loading.value.isUploading = false;
+          formState.value.success = true;
 
-          return $toast("error", "Upload error", error.message);
+          return $toast(
+               "success",
+               "Upload csv",
+               "Data transferred successfully"
+          );
+     } catch (error) {
+          if (error.response._data) {
+               let errorData = error.response._data;
+
+               formState.value.errors = errorData;
+               loading.value.isUploading = false;
+
+               return $toast("error", "Upload error", errorData.message);
+          } else {
+               return $toast("error", "Upload error", error.message);
+          }
      }
+};
+
+// Function to handle try again action
+const handleTryAgainBtn = async () => {
+     formState.value.currentFileUpload = 0;
+     formState.value.errors = undefined;
+     formState.value.success = false;
+
+     return await handleUploadData();
+};
+
+// Function to reset data in form state
+const resetFormState = () => {
+     formState.value.file = undefined;
+     formState.value.tableName = undefined;
+     formState.value.isCreateTable = false;
+     formState.value.columns = undefined;
+     formState.value.countPartsData = undefined;
+     formState.value.currentFileUpload = 0;
+     formState.value.splitData = [];
+     formState.value.errors = undefined;
+     formState.value.success = false;
 };
 </script>
 
@@ -173,67 +209,135 @@ const handleUploadData = async () => {
                </div>
           </template>
 
-          <UForm
-               v-if="!loading.isUploading"
-               :state="formState"
-               class="mt-3 space-y-4"
-          >
-               <UFormGroup required>
-                    <UInput
-                         type="file"
-                         size="sm"
-                         icon="i-heroicons-folder"
-                         :loading="loading.isParsing"
-                         @change="handleParse"
-                    />
-               </UFormGroup>
-
-               <UFormGroup required>
-                    <UInput
-                         v-model="formState.tableName"
-                         class="my-2"
-                         placeholder="Database table name"
-                         :disabled="loading.isParsing"
-                    />
-               </UFormGroup>
-
-               <div
-                    v-if="formState.columns"
-                    class="flex justify-between text-orange-400"
-               >
-                    <h1 class="text-sm">Set column properties:</h1>
-                    <h1 class="text-sm">
-                         The file is divided into {{ formState.countPartsData }}
-                    </h1>
-               </div>
-
-               <div>
-                    <div
-                         v-for="(item, index) in formState.columns"
-                         :key="index"
-                         class="flex gap-2 my-3"
+          <div v-if="!formState.success">
+               <!-- Upload baner -->
+               <div v-if="!formState.errors">
+                    <UForm
+                         v-if="!loading.isUploading"
+                         :state="formState"
+                         class="mt-3 space-y-4"
                     >
-                         <UFormGroup class="flex-1" label="Name">
-                              <UInput v-model="item.name" />
-                         </UFormGroup>
-
-                         <UFormGroup class="flex-1 color" label="Type">
-                              <USelect
-                                   v-model="item.type"
-                                   :options="types"
-                                   option-attribute="name"
+                         <UFormGroup required>
+                              <UInput
+                                   type="file"
+                                   size="sm"
+                                   icon="i-heroicons-folder"
+                                   :loading="loading.isParsing"
+                                   @change="handleParse"
                               />
                          </UFormGroup>
+
+                         <UFormGroup required>
+                              <UInput
+                                   v-model="formState.tableName"
+                                   class="my-2"
+                                   placeholder="Database table name"
+                                   :disabled="loading.isParsing"
+                              />
+                         </UFormGroup>
+
+                         <div
+                              v-if="formState.columns"
+                              class="flex justify-between text-orange-400"
+                         >
+                              <h1 class="text-sm">Set column properties:</h1>
+                              <h1 class="text-sm">
+                                   The file is divided into
+                                   {{ formState.countPartsData }}
+                              </h1>
+                         </div>
+
+                         <div>
+                              <div
+                                   v-for="(item, index) in formState.columns"
+                                   :key="index"
+                                   class="flex gap-2 my-3"
+                              >
+                                   <UFormGroup class="flex-1" label="Name">
+                                        <UInput v-model="item.name" />
+                                   </UFormGroup>
+
+                                   <UFormGroup
+                                        class="flex-1 color"
+                                        label="Type"
+                                   >
+                                        <USelect
+                                             v-model="item.type"
+                                             :options="types"
+                                             option-attribute="name"
+                                        />
+                                   </UFormGroup>
+                              </div>
+                         </div>
+                    </UForm>
+
+                    <!-- Progress line -->
+                    <div v-else>
+                         <UProgress
+                              :value="formState.currentFileUpload"
+                              :max="formState.countPartsData"
+                              indicator
+                         />
+                         <h1 class="text-xs font-thin mt-4">
+                              Uploading {{ formState.tableName }} ...
+                         </h1>
                     </div>
                </div>
-          </UForm>
 
-          <div v-else>
-               <UProgress
-                    :value="formState.currentFileUpload"
-                    :max="formState.countPartsData"
-                    indicator
+               <!-- Error baner -->
+               <div v-else>
+                    <h1 class="font-thin text-sm text-red-500 my-2">
+                         <span class="font-normal">ERROR SERVER:</span> <br />
+                         <span class="text-red-500">{{
+                              formState.errors.message
+                                   ? formState.errors.message
+                                   : formState.errors
+                         }}</span>
+                    </h1>
+
+                    <UDivider v-if="formState.errors.query" />
+
+                    <h1
+                         v-if="formState.errors.query"
+                         class="font-thin text-sm my-2"
+                    >
+                         <span class="font-normal">QUERY:</span> <br />{{
+                              formState.errors.query
+                         }}
+                    </h1>
+
+                    <UDivider v-if="formState.errors.query" />
+
+                    <div v-if="formState.errors.data" class="my-2">
+                         <h1 class="font-normal uppercase text-sm my-1">
+                              data where the error occurred:
+                         </h1>
+
+                         <div
+                              v-for="(item, key) in formState.errors.data"
+                              :key="key"
+                         >
+                              <div class="flex gap-2 my-1">
+                                   <h1 class="font-thin text-sm flex-1">
+                                        {{ key }}
+                                   </h1>
+                                   <h1 class="font-thin text-sm flex-1">
+                                        {{ item }}
+                                   </h1>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </div>
+
+          <!-- Success baner -->
+          <div v-else class="flex items-center text-green-600">
+               <UIcon
+                    name="i-material-symbols-light:check-circle-outline-rounded"
+                    class="w-10 h-10"
                />
+
+               <h1 class="ml-2">Data transferred successfully</h1>
           </div>
 
           <template #footer>
@@ -243,12 +347,37 @@ const handleUploadData = async () => {
                          label="Create a new table"
                          :disabled="loading.isUploading"
                     />
-                    <UButton
-                         class="font-light"
-                         :disabled="loading.isUploading"
-                         @click="handleUploadData"
-                         >Upload</UButton
-                    >
+
+                    <div>
+                         <UButton
+                              v-if="formState.errors"
+                              class="mr-2 font-light"
+                              variant="ghost"
+                              @click="resetFormState"
+                         >
+                              reset
+                         </UButton>
+
+                         <UButton
+                              class="font-light"
+                              :disabled="loading.isUploading"
+                              @click="
+                                   formState.errors
+                                        ? handleTryAgainBtn()
+                                        : formState.success
+                                        ? resetFormState()
+                                        : handleUploadData()
+                              "
+                         >
+                              {{
+                                   formState.errors
+                                        ? "Try again"
+                                        : formState.success
+                                        ? "Back"
+                                        : "Uploads"
+                              }}
+                         </UButton>
+                    </div>
                </div>
           </template>
      </UCard>
