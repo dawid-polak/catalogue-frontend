@@ -110,22 +110,7 @@ const handleParse = async (event) => {
      }
 };
 
-// function to send data to db
-const fetchData = async (body) => {
-     const url = "http://localhost:3000/api/uploads/rowData";
-
-     const headers = {
-          "Content-Type": "application/json",
-     };
-
-     const options = {
-          method: "POST",
-          headers,
-          body,
-     };
-
-     return await $fetch(url, options);
-};
+const { $api } = useNuxtApp();
 
 // Function to handle upload data
 const handleUploadData = async () => {
@@ -143,7 +128,7 @@ const handleUploadData = async () => {
 
                body.data = item;
 
-               const res = await fetchData(body);
+               const res = await $api.uploads.rowData(body);
 
                if (res.status === "success") {
                     formState.value.currentFileUpload = i;

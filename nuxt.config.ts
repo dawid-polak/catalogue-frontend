@@ -12,7 +12,7 @@ export default defineNuxtConfig({
      },
      runtimeConfig: {
           public: {
-               apiHost: "https://mastercatalogue.ozparts.eu",
+               host: "https://mastercatalogue.ozparts.eu",
           },
      },
 });
