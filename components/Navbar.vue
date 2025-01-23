@@ -48,23 +48,6 @@ const props = defineProps({
                               Home
                          </ULink>
 
-                         <UDropdown
-                              v-model:open="openData"
-                              :items="items"
-                              :popper="{ placement: 'bottom-start' }"
-                         >
-                              <ULink
-                                   active-class="text-orange-400"
-                                   inactive-class="text-orange dark:text-white hover:text-orange-400 dark:hover:text-orange-400"
-                              >
-                                   Data
-                              </ULink>
-
-                              <template #general="{ item }">
-                                   <div>{{ item.label }}</div>
-                              </template>
-                         </UDropdown>
-
                          <ULink
                               to="searchEngine"
                               active-class="text-orange-400"
@@ -91,7 +74,7 @@ const props = defineProps({
                </UContainer>
 
                <div class="flex items-center pr-5">
-                    <UButton
+                    <!-- <UButton
                          :icon="
                               props.isFullWithContainer
                                    ? 'i-material-symbols-light:collapse-content'
@@ -99,7 +82,7 @@ const props = defineProps({
                          "
                          variant="ghost"
                          @click="emit('expandDisplay'), (change = !change)"
-                    />
+                    /> -->
                </div>
           </div>
           <UDivider />

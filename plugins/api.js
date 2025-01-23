@@ -1,6 +1,7 @@
 import UploadModule from "~/repository/modules/upload";
 import DatabaseModule from "~/repository/modules/database";
 import CrudModules from "~/repository/modules/crud";
+import WarehouseModule from "~/repository/modules/warehouse";
 
 export default defineNuxtPlugin((nuxtApp) => {
      const config = useRuntimeConfig();
@@ -17,6 +18,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           uploads: new UploadModule(fetchOptions, apiFetcher),
           database: new DatabaseModule(fetchOptions, apiFetcher),
           crud: new CrudModules(fetchOptions, apiFetcher),
+          warehouse: new WarehouseModule(fetchOptions, apiFetcher),
      };
 
      return {
