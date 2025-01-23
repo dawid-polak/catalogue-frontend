@@ -1,20 +1,9 @@
 <script setup>
-const { $toast } = useNuxtApp();
+const { $toast, $api } = useNuxtApp();
 
 const isLoading = ref(false);
 const rows = ref();
 const columns = ref();
-
-// Get tables
-const fetchData = async () => {
-     let url = "http://localhost:3000/api/database/tables";
-
-     let headers = {
-          method: "GET",
-     };
-
-     return await $fetch(url, headers);
-};
 
 // Function to create columns to table
 const createColumns = (data) => {
@@ -56,7 +45,7 @@ const handleGetTables = async () => {
           rows.value = undefined;
           columns.value = undefined;
 
-          const res = await fetchData();
+          const res = await $api.database.tables();
 
           const newColumns = createColumns(res.data);
 

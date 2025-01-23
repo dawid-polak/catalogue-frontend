@@ -1,5 +1,5 @@
 <script setup>
-const { $toast } = useNuxtApp();
+const { $toast, $api } = useNuxtApp();
 
 const emit = defineEmits(["removed"]);
 const props = defineProps({
@@ -30,17 +30,6 @@ const actions = () => [
      ],
 ];
 
-// Fetch remove table from db
-const fetchRemove = async (tableID) => {
-     let url = `http://localhost:3000/api/crud/${tableID}`;
-
-     let headers = {
-          method: "DELETE",
-     };
-
-     return await $fetch(url, headers);
-};
-
 // Funciton to remove table from db
 const handleRemoveTableAction = async () => {
      try {
@@ -49,7 +38,7 @@ const handleRemoveTableAction = async () => {
 
           if (!table) throw new Error("Select table");
 
-          const res = await fetchRemove(table);
+          const res = await $api.crud.remove(table);
 
           if (res.status === "success") {
                isRemoving.value = false;
