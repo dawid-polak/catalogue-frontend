@@ -81,10 +81,19 @@ watch(
                </template>
                <template #ktypes-data="{ row }">
                     <p v-if="row.ktypes">
-                         <span v-for="item in row.ktypes">{{
+                         <span v-for="item in row.ktypes" :key="item">{{
                               item + " "
                          }}</span>
                     </p>
+               </template>
+               <template #criteria-data="{ row }">
+                    <div v-if="row.criteria">
+                         <p v-for="item in row.criteria" :key="item">
+                              <span class="font-bold">{{ item.name }}: </span>
+                              <span>{{ item.value.join(", ") }}</span>
+                         </p>
+                    </div>
+                    <div v-else>No data</div>
                </template>
 
                <!-- Empty state -->
